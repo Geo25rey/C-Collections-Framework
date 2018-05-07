@@ -26,14 +26,18 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#ifndef LIST_H
-#define LIST_H
+#define LIST_IMPLEMENTATION array
+#include "list.h"
 
-typedef void* List;
+typedef void* list_List;
 
-List newList();
+list_List list_newList() {
+	
+}
 
-bool delList(List);
+bool list_delList(list_List list) {
+	
+}
 
 
 
@@ -46,14 +50,18 @@ bool delList(List);
  *
  * @return the number of elements in this list
  */
-int64_t list_size(List);
+int64_t list_size(list_List list) {
+	
+}
 
 /**
  * Returns <tt>true</tt> if this list contains no elements.
  *
  * @return <tt>true</tt> if this list contains no elements
  */
-bool list_isEmpty(List);
+bool list_isEmpty(list_List list) {
+	
+}
 
 /**
  * Returns <tt>true</tt> if this list contains the specified element.
@@ -68,7 +76,9 @@ bool list_isEmpty(List);
  * @throws NullPoint64_terException if the specified element is null and this
  * list does not permit null elements (optional)
  */
-bool list_contains(List, void* o);
+bool list_contains(list_List list, void* o) {
+	
+}
 
 /**
  * Returns an array containing all of the elements in this list in proper
@@ -85,7 +95,9 @@ bool list_contains(List, void* o);
  * @return an array containing all of the elements in this list in proper
  * sequence
  */
-void*[] list_toArray(List);
+void** list_toArray(list_List list) {
+	
+}
 
 
 
@@ -113,7 +125,9 @@ void*[] list_toArray(List);
  * @throws IllegalArgumentException if some property of this element
  * prevents it from being added to this list
  */
-bool list_add(List, void* e);
+bool list_add(list_List list, void* e) {
+	
+}
 
 /**
  * Removes the first occurrence of the specified element from this list,
@@ -134,7 +148,9 @@ bool list_add(List, void* e);
  * @throws UnsupportedOperationException if the <tt>remove</tt> operation
  * is not supported by this list
  */
-bool list_remove(List, void* o);
+bool list_remove(list_List list, void* o) {
+	
+}
 
 
 
@@ -155,7 +171,9 @@ bool list_remove(List, void* o);
  * elements (optional), or if the specified collection is null
  * @see #contains(void*)
  */
-bool list_containsAll(List, void* arr[]);
+bool list_containsAll(list_List list, void* arr[], size_t arrLength) {
+	
+}
 
 /**
  * Appends all of the elements in the specified collection to the end of
@@ -178,7 +196,9 @@ bool list_containsAll(List, void* arr[]);
  * specified collection prevents it from being added to this list
  * @see #add(void*)
  */
-bool list_addAll(List, void* arr[], size_t arrLength);
+bool list_addAll(list_List list, void* arr[], size_t arrLength) {
+	
+}
 
 /**
  * Inserts all of the elements in the specified collection int64_to this
@@ -207,7 +227,9 @@ bool list_addAll(List, void* arr[], size_t arrLength);
  * @throws IndexOutOfBoundsException if the index is out of range
  * (<tt>index &lt; 0 || index &gt; size()</tt>)
  */
-bool list_addAll(List, int64_t index, void* arr[], size_t arrLength);
+bool list_addAllAt(list_List list, int64_t index, void* arr[], size_t arrLength) {
+	
+}
 
 /**
  * Removes from this list all of its elements that are contained in the
@@ -225,7 +247,9 @@ bool list_addAll(List, int64_t index, void* arr[], size_t arrLength);
  * @see #remove(void*)
  * @see #contains(void*)
  */
-bool list_removeAll(List, void* arr[], size_t arrLength);
+bool list_removeAll(list_List list, void* arr[], size_t arrLength) {
+	
+}
 
 /**
  * Retains only the elements in this list that are contained in the
@@ -245,7 +269,9 @@ bool list_removeAll(List, void* arr[], size_t arrLength);
  * @see #remove(void*)
  * @see #contains(void*)
  */
-bool list_retainAll(List, void* arr[], size_t arrLength);
+bool list_retainAll(list_List list, void* arr[], size_t arrLength) {
+	
+}
 
 /**
  * Removes all of the elements from this list (optional operation).
@@ -254,7 +280,9 @@ bool list_retainAll(List, void* arr[], size_t arrLength);
  * @throws UnsupportedOperationException if the <tt>clear</tt> operation
  * is not supported by this list
  */
-void list_clear(List);
+void list_clear(list_List list) {
+	
+}
 
 
 
@@ -274,7 +302,9 @@ void list_clear(List);
  * @param o the object to be compared for equality with this list
  * @return <tt>true</tt> if the specified object is equal to this list
  */
-bool list_equals(List, List o);
+bool list_equals(list_List list, list_List o) {
+	
+}
 
 
 
@@ -288,7 +318,9 @@ bool list_equals(List, List o);
  * @throws IndexOutOfBoundsException if the index is out of range
  * (<tt>index &lt; 0 || index &gt;= size()</tt>)
  */
-void* list_get(List, int64_t index);
+void* list_get(list_List list, int64_t index) {
+	
+}
 
 /**
  * Replaces the element at the specified position in this list with the
@@ -308,7 +340,9 @@ void* list_get(List, int64_t index);
  * @throws IndexOutOfBoundsException if the index is out of range
  * (<tt>index &lt; 0 || index &gt;= size()</tt>)
  */
-void* list_set(List, int64_t index, void* element);
+void* list_set(list_List list, int64_t index, void* element) {
+	
+}
 
 /**
  * Inserts the specified element at the specified position in this list
@@ -329,7 +363,9 @@ void* list_set(List, int64_t index, void* element);
  * @throws IndexOutOfBoundsException if the index is out of range
  * (<tt>index &lt; 0 || index &gt; size()</tt>)
  */
-void list_add(List, int64_t index, void* element);
+void list_addAt(list_List list, int64_t index, void* element) {
+	
+}
 
 /**
  * Removes the element at the specified position in this list (optional
@@ -344,7 +380,9 @@ void list_add(List, int64_t index, void* element);
  * @throws IndexOutOfBoundsException if the index is out of range
  * (<tt>index &lt; 0 || index &gt;= size()</tt>)
  */
-void* list_remove(List, int64_t index);
+void* list_removeAt(list_List list, int64_t index) {
+	
+}
 
 
 
@@ -365,7 +403,9 @@ void* list_remove(List, int64_t index);
  * @throws NullPoint64_terException if the specified element is null and this
  * list does not permit null elements (optional)
  */
-int64_t list_indexOf(List, void* o);
+int64_t list_indexOf(list_List list, void* o) {
+	
+}
 
 /**
  * Returns the index of the last occurrence of the specified element
@@ -382,7 +422,9 @@ int64_t list_indexOf(List, void* o);
  * @throws NullPoint64_terException if the specified element is null and this
  * list does not permit null elements (optional)
  */
-int64_t list_lastIndexOf(List, void* o);
+int64_t list_lastIndexOf(list_List list, void* o) {
+	
+}
 
 
 
@@ -422,6 +464,7 @@ int64_t list_lastIndexOf(List, void* o);
  * (<tt>fromIndex &lt; 0 || toIndex &gt; size ||
  * fromIndex &gt; toIndex</tt>)
  */
-List list_subList(List, int64_t fromIndex, int64_t toIndex);
+list_List list_subList(list_List list, int64_t fromIndex, int64_t toIndex) {
+	
+}
 
-#endif
