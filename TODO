@@ -1,1 +1,2 @@
-- Implement all funcitions in list.c
+- Implement all funcitions in list.c as an ArrayList
+- Add a better macro to control function names in list.h
