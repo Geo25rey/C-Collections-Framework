@@ -33,6 +33,7 @@
 #include "list.h"
 
 #define INIT_MAX_SIZE 10
+#define REALLOC_INTERVAL 10
 
 typedef struct {
 	void** array;
@@ -157,7 +158,15 @@ void** list_toArray(list_List list) {
  * prevents it from being added to this list
  */
 bool list_add(list_List list, void* e) {
-	
+	ArrayList* arrList = (ArrayList*) list;
+	if (arrList->size == arrList->maxSize) {
+		void** temp = realloc(arrList->array, sizeof(void*) * (arrList->maxSize + REALLOC_INTERVAL));
+		assert(temp != NULL);
+		arrList->array = temp;
+		arrList->maxSize += REALLOC_INTERVAL;
+	}
+	arrList->array[arrList->size++] = e;
+	return true;
 }
 
 /**
@@ -180,7 +189,19 @@ bool list_add(list_List list, void* e) {
  * is not supported by this list
  */
 bool list_remove(list_List list, void* o) {
-	
+	ArrayList* arrList = (ArrayList*) list;
+	int64_t i;
+	for (i = 0; i < arrList->size; ++i)
+		if (arrList->array[i] == o)
+			break;
+	if (i == arrList->size)
+		return false;
+	int64_t newSize = arrList->size - 1;
+	for (; i < newSize; ++i)
+		arrList->array[i] = arrList->array[i + 1];
+	arrList->array[i] = NULL;
+	arrList->size = newSize;
+	return true;
 }
 
 
