@@ -25,18 +25,37 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <assert.h>
 
 #define LIST_IMPLEMENTATION array
 #include "list.h"
 
-typedef void* list_List;
+#define INIT_MAX_SIZE 10
+
+typedef struct {
+	void** array;
+	int64_t size;
+	int64_t maxSize;
+	list_List superList;
+} ArrayList;
 
 list_List list_newList() {
-	
+	ArrayList* result = NULL;
+	result = calloc(1, sizeof(ArrayList));
+	assert(result != NULL);
+	result->array = calloc(INIT_MAX_SIZE, sizeof(void*));
+	assert(result->array != NULL);
+	result->maxSize = INIT_MAX_SIZE;
+	return (list_List) result;
 }
 
 bool list_delList(list_List list) {
-	
+	ArrayList* arrList = (ArrayList*) list;
+	if (arrList->superList == NULL)
+		free(arrList->array);
+	free(arrList);
 }
 
 
@@ -51,7 +70,8 @@ bool list_delList(list_List list) {
  * @return the number of elements in this list
  */
 int64_t list_size(list_List list) {
-	
+	ArrayList* arrList = (ArrayList*) list;
+	return arrList->size;
 }
 
 /**
@@ -60,7 +80,8 @@ int64_t list_size(list_List list) {
  * @return <tt>true</tt> if this list contains no elements
  */
 bool list_isEmpty(list_List list) {
-	
+	ArrayList* arrList = (ArrayList*) list;
+	return arrList->size == 0;
 }
 
 /**
@@ -77,7 +98,11 @@ bool list_isEmpty(list_List list) {
  * list does not permit null elements (optional)
  */
 bool list_contains(list_List list, void* o) {
-	
+	ArrayList* arrList = (ArrayList*) list;
+	for (int64_t i = 0; i < arrList->size; ++i)
+		if (arrList->array[i] == o)
+			return true;
+	return false;
 }
 
 /**
@@ -85,7 +110,7 @@ bool list_contains(list_List list, void* o) {
  * sequence (from first to last element).
  *
  * <p>The returned array will be "safe" in that no references to it are
- * maint64_tained by this list.  (In other words, this method must
+ * matained by this list.  (In other words, this method must
  * allocate a new array even if this list is backed by an array).
  * The caller is thus free to modify the returned array.
  *
@@ -96,7 +121,13 @@ bool list_contains(list_List list, void* o) {
  * sequence
  */
 void** list_toArray(list_List list) {
-	
+	ArrayList* arrList = (ArrayList*) list;
+	void** result = NULL;
+	result = malloc(sizeof(void*) * arrList->size);
+	assert(result != NULL);
+	for (int64_t i = 0; i < arrList->size; ++i) 
+		result[i] = arrList->array[i];
+	return result;
 }
 
 
