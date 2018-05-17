@@ -224,7 +224,20 @@ bool list_remove(list_List list, void* o) {
  * @see #contains(void*)
  */
 bool list_containsAll(list_List list, void* arr[], size_t arrLength) {
-	
+	ArrayList* arrList = (ArrayList*) list;
+	bool visited[arrList->size] = {}; // initially set to false
+	int64_t j; // let's not reallocate stack space for this
+	for (size_t i = 0; i < arrLength; ++i) {
+		for (j = 0; j < arrList->size; ++j)
+			if (!visited[j]) 
+				if (arrList->array[j] == arr[i]) {
+					visited[j] = true;
+					break;
+				} 
+		if (j == arrList->size)
+			return false;
+	}
+	return true;
 }
 
 /**
@@ -249,7 +262,18 @@ bool list_containsAll(list_List list, void* arr[], size_t arrLength) {
  * @see #add(void*)
  */
 bool list_addAll(list_List list, void* arr[], size_t arrLength) {
-	
+	ArrayList* arrList = (ArrayList*) list;
+	int64_t newSize = arrList->size + arrLength;
+	if (newSize >= arrList->maxSize) {
+		void* temp = realloc(arrList->array, sizeof(void*) * (newSize += REALLOC_INTERVAL));
+		assert(temp != NULL);
+		arrList->array = temp;
+		arrList->maxSize = newSize;
+	}
+	for (int64_t i = 0; i < arrLength; ++i) 
+		arrList->array[i + arrList->size] = arr[i];
+	arrList->size += arrLength;
+	return true;
 }
 
 /**

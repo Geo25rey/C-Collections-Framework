@@ -1,2 +1,9 @@
+General:
 - Implement all funcitions in list.c as an ArrayList
 - Add a better macro to control function names in list.h
+
+Refactoring:
+- Line 267 in list.c move if statement to its own static function
+
+
+Checkmark (for when I finish something): ✓
