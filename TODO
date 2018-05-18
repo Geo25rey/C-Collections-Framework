@@ -3,7 +3,9 @@ General:
 - Add a better macro to control function names in list.h
 
 Refactoring:
-- Line 267 in list.c move if statement to its own static function
+✓ Line 267 in list.c move if statement to its own static function
+- Update comments to be more alligned with C  ex: no exceptions
+- Fix some "int" strings in comments got replaced with "int64_t" strings
 
 
 Checkmark (for when I finish something): ✓

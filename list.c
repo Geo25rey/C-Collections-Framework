@@ -240,6 +240,15 @@ bool list_containsAll(list_List list, void* arr[], size_t arrLength) {
 	return true;
 }
 
+static void bulkUpdateSize(ArrayList* arrList, int64_t newSize) {
+	if (newSize >= arrList->maxSize) {
+		void* temp = realloc(arrList->array, sizeof(void*) * (newSize += REALLOC_INTERVAL));
+		assert(temp != NULL);
+		arrList->array = temp;
+		arrList->maxSize = newSize;
+	}
+}
+
 /**
  * Appends all of the elements in the specified collection to the end of
  * this list, in the order that they are returned by the specified
@@ -263,13 +272,8 @@ bool list_containsAll(list_List list, void* arr[], size_t arrLength) {
  */
 bool list_addAll(list_List list, void* arr[], size_t arrLength) {
 	ArrayList* arrList = (ArrayList*) list;
-	int64_t newSize = arrList->size + arrLength;
-	if (newSize >= arrList->maxSize) {
-		void* temp = realloc(arrList->array, sizeof(void*) * (newSize += REALLOC_INTERVAL));
-		assert(temp != NULL);
-		arrList->array = temp;
-		arrList->maxSize = newSize;
-	}
+	int64_t newSize = arrList->size + arrLength;	
+	bulkUpdateSize(arrList, newSize);
 	for (int64_t i = 0; i < arrLength; ++i) 
 		arrList->array[i + arrList->size] = arr[i];
 	arrList->size += arrLength;
@@ -304,7 +308,23 @@ bool list_addAll(list_List list, void* arr[], size_t arrLength) {
  * (<tt>index &lt; 0 || index &gt; size()</tt>)
  */
 bool list_addAllAt(list_List list, int64_t index, void* arr[], size_t arrLength) {
-	
+	ArrayList* arrList = (ArrayList*) list;
+	assert(index >= 0 && index <= arrList->size);
+	int64_t newSize = arrList->size + arrLength;
+	bulkUpdateSize(arrList, newSize);
+	void** array = arrList->array;
+	for (size_t i = 0; i < arrLength; ++i) {
+		array[arrLength + i] = array[index + i];
+		array[index + i] = arr[i];
+	}
+	return true;
+}
+
+/// Calculates the smallest index of the largest continuous region of items to be
+/// 	removed from an ArrayList arrList
+static int64_t findVisitedRegion(ArrayList* arrList, bool visited[], int64_t end) {
+	for (int64_t i = end; visited[i]; --i);
+	return i + 1;
 }
 
 /**
@@ -324,7 +344,31 @@ bool list_addAllAt(list_List list, int64_t index, void* arr[], size_t arrLength)
  * @see #contains(void*)
  */
 bool list_removeAll(list_List list, void* arr[], size_t arrLength) {
-	
+	ArrayList* arrList = (ArrayList*) list;
+	bool visited[arrList->size] = {}; // initially set to false
+	int64_t j; // let's not reallocate stack space for this
+	for (size_t i = 0; i < arrLength; ++i) {
+		for (j = 0; j < arrList->size; ++j)
+			if (!visited[j]) 
+				if (arrList->array[j] == arr[i]) {
+					visited[j] = true;
+					break;
+				} 
+	}
+	for (int64_t i = arrList->size - 1; i >= 0; --i)
+		if (visited[i]) {
+			if (i == arrList->size)
+				--arrList->size;
+			else {
+				int64_t index = findVisitedRegion(arrList, visited, i);
+				int64_t newSize = arrList->size - i + index - 1;
+				int64_t rmSize = i - index + 1;
+				for (int64_t k = index; k < newSize; ++k)
+					arrList->array[k] = arrList->array[k + rmSize];
+				arrList->size = newSize;
+				i = index;
+			}
+		}
 }
 
 /**
@@ -346,6 +390,7 @@ bool list_removeAll(list_List list, void* arr[], size_t arrLength) {
  * @see #contains(void*)
  */
 bool list_retainAll(list_List list, void* arr[], size_t arrLength) {
+	ArrayList* arrList = (ArrayList*) list;
 	
 }
 
@@ -357,7 +402,8 @@ bool list_retainAll(list_List list, void* arr[], size_t arrLength) {
  * is not supported by this list
  */
 void list_clear(list_List list) {
-	
+	ArrayList* arrList = (ArrayList*) list;
+	arrList->size = 0;
 }
 
 
@@ -379,7 +425,14 @@ void list_clear(list_List list) {
  * @return <tt>true</tt> if the specified object is equal to this list
  */
 bool list_equals(list_List list, list_List o) {
-	
+	ArrayList* arrList = (ArrayList*) list;
+	ArrayList* arrList2 = (ArrayList*) o;
+	if (arrList->size != arrList2->size) 
+		return false;
+	for (int64_t i = 0; i < arrList->size; ++i)
+		if (arrList->array[i] != arrList2->array[i])
+			return false;
+	return true;
 }
 
 
@@ -395,7 +448,9 @@ bool list_equals(list_List list, list_List o) {
  * (<tt>index &lt; 0 || index &gt;= size()</tt>)
  */
 void* list_get(list_List list, int64_t index) {
-	
+	ArrayList* arrList = (ArrayList*) list;
+	assert(index >= 0 && index < arrList->size);
+	return arrList->array[index];
 }
 
 /**
@@ -417,7 +472,11 @@ void* list_get(list_List list, int64_t index) {
  * (<tt>index &lt; 0 || index &gt;= size()</tt>)
  */
 void* list_set(list_List list, int64_t index, void* element) {
-	
+	ArrayList* arrList = (ArrayList*) list;
+	assert(index >= 0 && index < arrList->size);
+	void* result = arrList->array[index];
+	arrList->array[index] = element;
+	return result;
 }
 
 /**
@@ -440,6 +499,7 @@ void* list_set(list_List list, int64_t index, void* element) {
  * (<tt>index &lt; 0 || index &gt; size()</tt>)
  */
 void list_addAt(list_List list, int64_t index, void* element) {
+	ArrayList* arrList = (ArrayList*) list;
 	
 }
 
@@ -457,6 +517,7 @@ void list_addAt(list_List list, int64_t index, void* element) {
  * (<tt>index &lt; 0 || index &gt;= size()</tt>)
  */
 void* list_removeAt(list_List list, int64_t index) {
+	ArrayList* arrList = (ArrayList*) list;
 	
 }
 
@@ -480,6 +541,7 @@ void* list_removeAt(list_List list, int64_t index) {
  * list does not permit null elements (optional)
  */
 int64_t list_indexOf(list_List list, void* o) {
+	ArrayList* arrList = (ArrayList*) list;
 	
 }
 
@@ -499,6 +561,7 @@ int64_t list_indexOf(list_List list, void* o) {
  * list does not permit null elements (optional)
  */
 int64_t list_lastIndexOf(list_List list, void* o) {
+	ArrayList* arrList = (ArrayList*) list;
 	
 }
 
@@ -541,6 +604,7 @@ int64_t list_lastIndexOf(list_List list, void* o) {
  * fromIndex &gt; toIndex</tt>)
  */
 list_List list_subList(list_List list, int64_t fromIndex, int64_t toIndex) {
+	ArrayList* arrList = (ArrayList*) list;
 	
 }
 
