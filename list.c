@@ -499,8 +499,7 @@ void* list_set(list_List list, int64_t index, void* element) {
  * (<tt>index &lt; 0 || index &gt; size()</tt>)
  */
 void list_addAt(list_List list, int64_t index, void* element) {
-	ArrayList* arrList = (ArrayList*) list;
-	
+	list_addAllAt(list, index, &element, 1);
 }
 
 /**
@@ -518,7 +517,12 @@ void list_addAt(list_List list, int64_t index, void* element) {
  */
 void* list_removeAt(list_List list, int64_t index) {
 	ArrayList* arrList = (ArrayList*) list;
-	
+	assert(index >= 0 && index < arrList->size);
+	void* result = arrList->array[index];
+	--arrList->size;
+	for (int64_t i = index; i < arrList->size; ++i)
+		arrList->array[i] = arrList->array[i + 1];
+	return result;
 }
 
 
@@ -542,7 +546,10 @@ void* list_removeAt(list_List list, int64_t index) {
  */
 int64_t list_indexOf(list_List list, void* o) {
 	ArrayList* arrList = (ArrayList*) list;
-	
+	for (int64_t i = 0; i < arrList->size; ++i)
+		if (arrList->array[i] == o)
+			return i;
+	return -1;
 }
 
 /**
@@ -562,7 +569,10 @@ int64_t list_indexOf(list_List list, void* o) {
  */
 int64_t list_lastIndexOf(list_List list, void* o) {
 	ArrayList* arrList = (ArrayList*) list;
-	
+	for (int64_t i = arrList->size - 1; i >= 0; --i)
+		if (arrList->array[i] == o)
+			return i;
+	return -1;
 }
 
 
@@ -605,6 +615,13 @@ int64_t list_lastIndexOf(list_List list, void* o) {
  */
 list_List list_subList(list_List list, int64_t fromIndex, int64_t toIndex) {
 	ArrayList* arrList = (ArrayList*) list;
-	
+	assert(fromIndex >= 0 && toIndex <= arrList->size && toIndex >= fromIndex);
+	ArrayList* result = NULL;
+	result = malloc(sizeof(ArrayList));
+	result->array = arrList->array + fromIndex;
+	result->size = fromIndex - toIndex + 1;
+	result->maxSize = arrList->maxSize - fromIndex + 1;
+	result->superList = list;
+	return (list_List) result;
 }
 
