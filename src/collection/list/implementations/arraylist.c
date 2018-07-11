@@ -30,7 +30,7 @@
 #include <assert.h>
 
 #define LIST_IMPLEMENTATION array
-#include "list.h"
+#include "collection/list/implementations/arraylist.h"
 
 #define INIT_MAX_SIZE 10
 #define REALLOC_INTERVAL 10
@@ -320,13 +320,6 @@ bool list_addAllAt(list_List list, int64_t index, void* arr[], size_t arrLength)
 	return true;
 }
 
-/// Calculates the smallest index of the largest continuous region of items to be
-/// 	removed from an ArrayList arrList
-static int64_t findVisitedRegion(ArrayList* arrList, bool visited[], int64_t end) {
-	for (int64_t i = end; visited[i]; --i);
-	return i + 1;
-}
-
 /**
  * Removes from this list all of its elements that are contained in the
  * specified collection (optional operation).
@@ -347,6 +340,7 @@ bool list_removeAll(list_List list, void* arr[], size_t arrLength) {
 	ArrayList* arrList = (ArrayList*) list;
 	bool visited[arrList->size] = {}; // initially set to false
 	int64_t j; // let's not reallocate stack space for this
+	// visited array saves which list indexes are in array arr
 	for (size_t i = 0; i < arrLength; ++i) {
 		for (j = 0; j < arrList->size; ++j)
 			if (!visited[j]) 
@@ -360,7 +354,8 @@ bool list_removeAll(list_List list, void* arr[], size_t arrLength) {
 			if (i == arrList->size)
 				--arrList->size;
 			else {
-				int64_t index = findVisitedRegion(arrList, visited, i);
+				for (j = i; visited[j]; --j); // finds visited region
+				int64_t index = j + 1;
 				int64_t newSize = arrList->size - i + index - 1;
 				int64_t rmSize = i - index + 1;
 				for (int64_t k = index; k < newSize; ++k)
@@ -391,7 +386,33 @@ bool list_removeAll(list_List list, void* arr[], size_t arrLength) {
  */
 bool list_retainAll(list_List list, void* arr[], size_t arrLength) {
 	ArrayList* arrList = (ArrayList*) list;
-	
+	bool visited[arrList->size] = {}; // initially set to false
+	int64_t j; // let's not reallocate stack space for this
+	// visited array saves which list indexes are in array arr
+	for (size_t i = 0; i < arrLength; ++i) {
+		for (j = 0; j < arrList->size; ++j)
+			if (!visited[j]) 
+				if (arrList->array[j] == arr[i]) {
+					visited[j] = true;
+					break;
+				} 
+	}
+	for (int64_t i = arrList->size - 1; i >= 0; --i)
+		if (!visited[i]) {
+			if (i == arrList->size)
+				--arrList->size;
+			else {
+				for (j = i; !visited[j]; --j); // finds non visited region
+				int64_t index = j + 1;
+				int64_t newSize = arrList->size - i + index - 1;
+				int64_t rmSize = i - index + 1;
+				for (int64_t k = index; k < newSize; ++k)
+					arrList->array[k] = arrList->array[k + rmSize];
+				arrList->size = newSize;
+				i = index;
+			}
+		}
+
 }
 
 /**

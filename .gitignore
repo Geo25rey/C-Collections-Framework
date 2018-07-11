@@ -1,3 +1,6 @@
+# Workspace Dependents
+.vim
+
 # Prerequisites
 *.d
 

@@ -2,7 +2,10 @@ General:
 ✓ Implement all funcitions in list.c as an ArrayList
 - Add a better macro to control function names in list.h
 - Edit all functions to take into account sub lists
-- Finish retainAll function (Hint: very similar to removeAll)
+✓ Finish retainAll function (Hint: very similar to removeAll)
+- Implement interfaces such as Collection, List, Map, etc.
+- Debating on how to distinguish types. Maybe enum in each Interface or hash functions?
+- Finish working on recursive build system using Make (Can't distiguish what needs to be made)
 
 Refactoring:
 ✓ Line 267 in list.c move if statement to its own static function
